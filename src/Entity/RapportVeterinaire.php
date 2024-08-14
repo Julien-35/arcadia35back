@@ -20,6 +20,9 @@ class RapportVeterinaire
     #[ORM\Column(length: 500)]
     private ?string $detail = null;
 
+    #[ORM\ManyToOne(inversedBy: 'rapport_veterinaire')]
+    private ?Animal $animal = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -45,6 +48,18 @@ class RapportVeterinaire
     public function setDetail(string $detail): static
     {
         $this->detail = $detail;
+
+        return $this;
+    }
+
+    public function getAnimal(): ?Animal
+    {
+        return $this->animal;
+    }
+
+    public function setAnimal(?Animal $animal): static
+    {
+        $this->animal = $animal;
 
         return $this;
     }

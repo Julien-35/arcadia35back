@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\HabitatRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -25,6 +27,14 @@ class Habitat
 
     #[ORM\Column(type: Types::TEXT, nullable: true, length: 500000)]
     private ?string $image_data = null;
+
+    #[ORM\OneToMany(targetEntity: Animal::class, mappedBy: 'habitat')]
+    private Collection $habitat;
+
+    public function __construct()
+    {
+        $this->habitat = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -75,6 +85,36 @@ class Habitat
     public function setImageData(string $image_data): static
     {
         $this->image_data = $image_data;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Animal>
+     */
+    public function getHabitat(): Collection
+    {
+        return $this->habitat;
+    }
+
+    public function addHabitat(Animal $habitat): static
+    {
+        if (!$this->habitat->contains($habitat)) {
+            $this->habitat->add($habitat);
+            $habitat->setHabitat($this);
+        }
+
+        return $this;
+    }
+
+    public function removeHabitat(Animal $habitat): static
+    {
+        if ($this->habitat->removeElement($habitat)) {
+            // set the owning side to null (unless already changed)
+            if ($habitat->getHabitat() === $this) {
+                $habitat->setHabitat(null);
+            }
+        }
 
         return $this;
     }

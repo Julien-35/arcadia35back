@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\AnimalRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -31,6 +33,21 @@ class Animal
 
     #[ORM\Column(type: Types::TEXT, nullable: true, length: 500000)]
     private ?string $image_data = null;
+
+    #[ORM\ManyToOne(inversedBy: 'animal')]
+    private ?Habitat $habitat = null;
+
+    #[ORM\ManyToOne(inversedBy: 'animal')]
+    private ?Race $race = null;
+
+
+    #[ORM\OneToMany(targetEntity: RapportVeterinaire::class, mappedBy: 'animal')]
+    private Collection $rapport_veterinaire;
+
+    public function __construct()
+    {
+        $this->rapport_veterinaire = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -105,6 +122,59 @@ class Animal
     public function setImageData(string $image_data): static
     {
         $this->image_data = $image_data;
+
+        return $this;
+    }
+
+    public function getHabitat(): ?Habitat
+    {
+        return $this->habitat;
+    }
+
+    public function setHabitat(?Habitat $habitat): static
+    {
+        $this->habitat = $habitat;
+
+        return $this;
+    }
+
+    public function getRace(): ?Race
+    {
+        return $this->race;
+    }
+
+    public function setRace(?Race $race): static
+    {
+        $this->race = $race;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, RapportVeterinaire>
+     */
+    public function getRapportVeterinaire(): Collection
+    {
+        return $this->rapport_veterinaire;
+    }
+
+    public function addRapportVeterinaire(RapportVeterinaire $rapportVeterinaire): static
+    {
+        if (!$this->rapport_veterinaire->contains($rapportVeterinaire)) {
+            $this->rapport_veterinaire->add($rapportVeterinaire);
+            $rapportVeterinaire->setAnimal($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRapportVeterinaire(RapportVeterinaire $rapportVeterinaire): static
+    {
+        if ($this->rapport_veterinaire->removeElement($rapportVeterinaire)) {
+            if ($rapportVeterinaire->getAnimal() === $this) {
+                $rapportVeterinaire->setAnimal(null);
+            }
+        }
 
         return $this;
     }
