@@ -7,94 +7,118 @@ use App\Repository\RapportVeterinaireRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\{JsonResponse, Request, Response};
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\Serializer\SerializerInterface;
-use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use OpenApi\Attributes as OA;
-use Nelmio\ApiDocBundle\Annotation\Model;
-use OpenApi\Attributes\RequestBody;
-use OpenApi\Attributes\Property;
-use OpenApi\Attributes\JsonContent;
-use OpenApi\Attributes\MediaType;
-use OpenApi\Attributes\Schema;
 
-
-#[Route('/api/rapportveterinaire', name:'app_api_arcadia_rapport_veterinaire_')]
+#[Route('/api/rapportveterinaire', name: 'app_api_rapport_veterinaire_')]
 class RapportVeterinaireController extends AbstractController
 {
     private EntityManagerInterface $manager;
     private RapportVeterinaireRepository $repository;
-    private SerializerInterface $serializer;
-    private UrlGeneratorInterface $urlGenerator;
 
     public function __construct(
         EntityManagerInterface $manager,
-        RapportVeterinaireRepository $repository,
-        SerializerInterface $serializer,
-        UrlGeneratorInterface $urlGenerator
+        RapportVeterinaireRepository $repository
     ) {
         $this->manager = $manager;
         $this->repository = $repository;
-        $this->serializer = $serializer;
-        $this->urlGenerator = $urlGenerator;
     }
 
-    #[Route('', name:'create', methods:['POST'])]
-    public function new(Request $request): JsonResponse
+    #[Route('', name: 'create', methods: ['POST'])]
+    public function create(Request $request): JsonResponse
     {
-        $rapport_veterinaire = $this->serializer->deserialize($request->getContent(), RapportVeterinaire::class, 'json');
-        $this->manager->persist($rapport_veterinaire);
-        $this->manager->flush();
-        
-        $responseData = $this->serializer->serialize($rapport_veterinaire, 'json');
-        
-        $location = $this->urlGenerator->generate(
-            'app_api_arcadia_rapport_veterinaire_show',
-            ['id' => $rapport_veterinaire->getId()],
-            UrlGeneratorInterface::ABSOLUTE_URL
-        );
+        $data = json_decode($request->getContent(), true);
 
-        return new JsonResponse($responseData, Response::HTTP_CREATED, ["Location" => $location], true);
+        if (empty($data['detail']) || empty($data['animal_id'])) {
+            return new JsonResponse(['error' => 'Detail and animal_id are required'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $animal = $this->manager->getRepository(Animal::class)->find($data['animal_id']);
+
+        if (!$animal) {
+            return new JsonResponse(['error' => 'Animal not found'], Response::HTTP_NOT_FOUND);
+        }
+
+        $rapport = new RapportVeterinaire();
+        $rapport->setDetail($data['detail']);
+        $rapport->setDate(new \DateTime()); 
+
+        $rapport->setAnimal($animal);
+
+        $this->manager->persist($rapport);
+        $this->manager->flush();
+
+        return new JsonResponse(['message' => 'Rapport vétérinaire créé avec succès'], Response::HTTP_CREATED);
     }
 
-    #[Route('/get', name:'show', methods:['GET'])]
+    #[Route('/get', name: 'show', methods: ['GET'])]
     public function show(): JsonResponse
     {
-        $rapport_veterinaires = $this->repository->findAll();
-        $responseData = $this->serializer->serialize($rapport_veterinaires, 'json');
-
-        return new JsonResponse($responseData, Response::HTTP_OK, [], true);
-    }
-
-    #[Route('/{id}', name:'edit', methods:['PUT'])]
-    public function edit(int $id, Request $request): JsonResponse
-    {
-        $rapport_veterinaire = $this->repository->findOneBy(['id' => $id]);
-        if ($rapport_veterinaire) {
-            $rapport_veterinaire = $this->serializer->deserialize(
-                $request->getContent(),
-                RapportVeterinaire::class,
-                'json',
-                [AbstractNormalizer::OBJECT_TO_POPULATE => $rapport_veterinaire]
-            );
-            $this->manager->flush();
-
-            return new JsonResponse(null, Response::HTTP_NO_CONTENT);
+        $rapports = $this->repository->findAll(); // Récupère tous les rapports vétérinaires
+    
+        if (empty($rapports)) {
+            return new JsonResponse(['error' => 'No rapport vétérinaire found'], Response::HTTP_NOT_FOUND);
         }
-        return new JsonResponse(null, Response::HTTP_NOT_FOUND);
+    
+        $rapportsData = array_map(function ($rapport) {
+            return [
+                'id' => $rapport->getId(), // Ajoutez l'ID si nécessaire
+                'date' => $rapport->getDate()->format('Y-m-d\TH:i:s'),
+                'detail' => $rapport->getDetail(),
+                'animal_prenom' => $rapport->getAnimal() ? $rapport->getAnimal()->getPrenom() : null
+            ];
+        }, $rapports);
+    
+        return new JsonResponse($rapportsData, Response::HTTP_OK);
     }
 
-    #[Route('/{id}', name:'delete', methods:['DELETE'])]
+    #[Route('/{id}', name: 'update', methods: ['PUT'])]
+    public function update(Request $request, int $id): JsonResponse
+    {
+        $rapport = $this->repository->find($id);
+
+        if (!$rapport) {
+            return new JsonResponse(['error' => 'Rapport vétérinaire not found'], Response::HTTP_NOT_FOUND);
+        }
+
+        $data = json_decode($request->getContent(), true);
+
+        if (isset($data['detail'])) {
+            $rapport->setDetail($data['detail']);
+        }
+        if (isset($data['date'])) {
+            try {
+                $date = new \DateTime($data['date']);
+                $rapport->setDate($date);
+            } catch (\Exception $e) {
+                return new JsonResponse(['error' => 'Invalid date format'], Response::HTTP_BAD_REQUEST);
+            }
+        }
+        if (isset($data['animal_id'])) {
+            $animal = $this->manager->getRepository(Animal::class)->find($data['animal_id']);
+            if (!$animal) {
+                return new JsonResponse(['error' => 'Animal not found'], Response::HTTP_NOT_FOUND);
+            }
+            $rapport->setAnimal($animal);
+        }
+
+        $this->manager->persist($rapport);
+        $this->manager->flush();
+
+        return new JsonResponse(['message' => 'Rapport vétérinaire mis à jour avec succès'], Response::HTTP_OK);
+    }
+
+    #[Route('/{id}', name: 'delete', methods: ['DELETE'])]
     public function delete(int $id): JsonResponse
     {
-        $rapport_veterinaire = $this->repository->findOneBy(['id' => $id]);
-        if ($rapport_veterinaire) {
-            $this->manager->remove($rapport_veterinaire);
-            $this->manager->flush();
+        $rapport = $this->repository->find($id);
 
-            return new JsonResponse(null, Response::HTTP_NO_CONTENT);
+        if (!$rapport) {
+            return new JsonResponse(['error' => 'Rapport vétérinaire not found'], Response::HTTP_NOT_FOUND);
         }
-        return new JsonResponse(null, Response::HTTP_NOT_FOUND);
+
+        $this->manager->remove($rapport);
+        $this->manager->flush();
+
+        return new JsonResponse(null, Response::HTTP_NO_CONTENT);
     }
 }

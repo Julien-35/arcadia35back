@@ -63,8 +63,8 @@ class HoraireController extends AbstractController
         foreach ($horaires as $horaire) {
             $horairesArray[] = [
                 'id' => $horaire->getId(),
-                'nom' => $horaire->getTitre(),
-                'description' => $horaire->getMessage(),
+                'titre' => $horaire->getTitre(),
+                'message' => $horaire->getMessage(),
                 'heure_debut' => $horaire->getHeureDebut(),
                 'heure_fin' => $horaire->getHeureFin(),
                 'jour' => $horaire->getJour(),  // Assurez-vous que le nom de la méthode est correct
