@@ -38,6 +38,8 @@ class AnimalController extends AbstractController
         $animal = new Animal();
         $animal->setPrenom($data['Prenom']);
         $animal->setEtat($data['etat'] ?? null);
+        $animal->setNourriture($data['nourriture'] ?? null);
+
         $animal->setGrammage($data['grammage'] ?? null);
 
         // Convertir feeding_time en DateTime
@@ -69,16 +71,26 @@ class AnimalController extends AbstractController
     }
 
     #[Route('/get', name: 'show', methods: ['GET'])]
-    public function show(): JsonResponse
+    public function show(Request $request): JsonResponse
     {
-        $animals = $this->repository->findAll();
-        $animalsArray = [];
+        // Récupérer le paramètre habitat_id depuis la requête
+        $habitatId = $request->query->get('habitat_id');
     
+        // Vérifier si habitat_id est présent et récupérer les animaux associés
+        if ($habitatId) {
+            $animals = $this->repository->findBy(['habitat' => $habitatId]);
+        } else {
+            $animals = $this->repository->findAll();
+        }
+    
+        $animalsArray = [];
+        
         foreach ($animals as $animal) {
             $animalData = [
                 'id' => $animal->getId(),
-                'Prenom' => $animal->getPrenom(),
+                'prenom' => $animal->getPrenom(),
                 'etat' => $animal->getEtat(),
+                'nourriture' => $animal->getNourriture(),
                 'grammage' => $animal->getGrammage(),
                 'feeding_time' => $animal->getFeedingTime() ? $animal->getFeedingTime()->format('H:i') : null,
                 'created_at' => $animal->getCreatedAt() ? $animal->getCreatedAt()->format('Y-m-d\TH:i:s') : null,
@@ -99,6 +111,7 @@ class AnimalController extends AbstractController
         return new JsonResponse($animalsArray, Response::HTTP_OK);
     }
     
+    
 
     #[Route('/{id}', name:'edit', methods:['PUT'])]
     public function updateAnimal(Request $request, $id): JsonResponse
@@ -116,6 +129,9 @@ class AnimalController extends AbstractController
         }
         if (isset($data['etat'])) {
             $animal->setEtat($data['etat']);
+        }
+        if (isset($data['nourriture'])) {
+            $animal->setNourriture($data['nourriture']);
         }
         if (isset($data['grammage'])) {
             $animal->setGrammage($data['grammage']);

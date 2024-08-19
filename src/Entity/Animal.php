@@ -44,6 +44,9 @@ class Animal
     #[ORM\OneToMany(targetEntity: RapportVeterinaire::class, mappedBy: 'animal')]
     private Collection $rapport_veterinaire;
 
+    #[ORM\Column(length: 250)]
+    private ?string $nourriture = null;
+
     public function __construct()
     {
         $this->rapport_veterinaire = new ArrayCollection();
@@ -77,6 +80,20 @@ class Animal
 
         return $this;
     }
+
+    
+    public function getNourriture(): ?string
+    {
+        return $this->nourriture;
+    }
+
+    public function setNourriture(string $nourriture): static
+    {
+        $this->nourriture = $nourriture;
+
+        return $this;
+    }
+    
 
     public function getGrammage(): ?string
     {
@@ -178,4 +195,5 @@ class Animal
 
         return $this;
     }
+
 }
