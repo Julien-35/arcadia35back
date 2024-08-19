@@ -62,7 +62,7 @@ class RapportVeterinaireController extends AbstractController
         $rapportsData = array_map(function ($rapport) {
             return [
                 'id' => $rapport->getId(), // Ajoutez l'ID si nécessaire
-                'date' => $rapport->getDate()->format('Y-m-d\TH:i:s'),
+                'date' => $rapport->getDate()->format('d-m-Y'),
                 'detail' => $rapport->getDetail(),
                 'animal_prenom' => $rapport->getAnimal() ? $rapport->getAnimal()->getPrenom() : null
             ];
