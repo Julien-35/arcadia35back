@@ -1,75 +1,57 @@
 <?php
-// src/Security/ApiTokenAuthenticator.php
 
 namespace App\Security;
 
+use App\Repository\UserRepository;
+use Symfony\Component\Security\Core\Exception\UserNotFoundException;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Security\Guard\Passport\Passport;
-use Symfony\Component\Security\Guard\Authenticator\Passport\Badge\UserBadge;
-use Symfony\Component\Security\Guard\Authenticator\Passport\SelfValidatingPassport;
-use Symfony\Component\Security\Guard\AbstractGuardAuthenticator;
-use Symfony\Component\Security\Core\User\UserProviderInterface;
-use Symfony\Component\Security\Core\Exception\AuthenticationException;
-use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+use Symfony\Component\Security\Core\Exception\AuthenticationException;
+use Symfony\Component\Security\Http\Authenticator\AbstractAuthenticator;
+use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
+use Symfony\Component\Security\Http\Authenticator\Passport\SelfValidatingPassport;
+use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
+use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
 
-class ApiTokenAuthenticator extends AbstractGuardAuthenticator
+class ApiTokenAuthenticator extends AbstractAuthenticator
 {
-    private $userProvider;
-
-    public function __construct(UserProviderInterface $userProvider)
+    public function __construct(private UserRepository $repository)
     {
-        $this->userProvider = $userProvider;
     }
 
     public function supports(Request $request): ?bool
     {
-        return $request->headers->has('Authorization');
+        return $request->headers->has('X-AUTH-TOKEN');
     }
 
-    public function getCredentials(Request $request): ?string
+    public function authenticate(Request $request): Passport
     {
-        $authHeader = $request->headers->get('Authorization');
-        if (null === $authHeader) {
-            return null;
+        $apiToken = $request->headers->get('X-AUTH-TOKEN');
+        if (null === $apiToken) {
+            throw new CustomUserMessageAuthenticationException('No API token provided');
         }
 
-        return substr($authHeader, 7); // Remove "Bearer " from the start of the token
-    }
-
-    public function getUser($credentials, UserProviderInterface $userProvider): ?UserInterface
-    {
-        if (null === $credentials) {
-            return null;
+        $user = $this->repository->findOneBy(['apiToken' => $apiToken]);
+        if (null === $user) {
+            throw new UserNotFoundException('User not found for the provided API token');
         }
 
-        // Assuming your User entity has a method to find by apiToken
-        return $userProvider->loadUserByIdentifier($credentials);
+        return new SelfValidatingPassport(new UserBadge($user->getUserIdentifier()));
     }
 
-    public function checkCredentials($credentials, UserInterface $user): bool
+    public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
-        return true; // The token validation should be handled in getUser()
-    }
-
-    public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey): ?Response
-    {
-        return null; // No redirect necessary
+        // You can return a custom response or null if you just want to allow access
+        return null;
     }
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
     {
-        return new Response('Authentication failed', Response::HTTP_FORBIDDEN);
-    }
-
-    public function start(Request $request, AuthenticationException $authException = null): Response
-    {
-        return new Response('Authentication required', Response::HTTP_UNAUTHORIZED);
-    }
-
-    public function supportsRememberMe(): bool
-    {
-        return false; // Return false if you do not support "remember me"
+        return new JsonResponse(
+            ['message' => 'Authentication failed: ' . $exception->getMessage()],
+            Response::HTTP_UNAUTHORIZED
+        );
     }
 }

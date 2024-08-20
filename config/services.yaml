@@ -1,5 +1,4 @@
 # config/services.yaml
-
 services:
     _defaults:
         autowire: true
@@ -20,4 +19,4 @@ services:
     # Correct the ApiTokenAuthenticator service definition
     App\Security\ApiTokenAuthenticator:
         arguments:
-            - '@security.user.provider.concrete.app_user_provider'
+            - '@App\Repository\UserRepository'
