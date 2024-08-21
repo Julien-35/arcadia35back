@@ -40,8 +40,6 @@ class HabitatController extends AbstractController
         $habitat->setDescription($data['description'] ?? null);
         $habitat->setCommentaireHabitat($data['commentaire_habitat'] ?? null);
 
-
-
         $habitat->setImageData($data['image_data'] ?? null);
 
         $this->manager->persist($habitat);

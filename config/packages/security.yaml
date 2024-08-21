@@ -24,12 +24,15 @@ security:
 
     access_control:
         - { path: ^/api/registration, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/api/service/get, roles: IS_AUTHENTICATED_ANONYMOUSLY }  # Allow public access to this route
-        - { path: ^/api/horaire/get, roles: IS_AUTHENTICATED_ANONYMOUSLY }  # Allow public access to this route
-        - { path: ^/api/avis/get, roles: IS_AUTHENTICATED_ANONYMOUSLY }  # Allow public access to this route
-        - { path: ^/api/habitat/get, roles: IS_AUTHENTICATED_ANONYMOUSLY }  # Allow public access to this route
-        - { path: ^/api/animal/get, roles: IS_AUTHENTICATED_ANONYMOUSLY }  # Allow public access to this route
-
+        - { path: ^/api/service/get, roles: IS_AUTHENTICATED_ANONYMOUSLY }  
+        - { path: ^/api/service/, roles: IS_AUTHENTICATED_ANONYMOUSLY }  
+        - { path: ^/api/horaire/get, roles: IS_AUTHENTICATED_ANONYMOUSLY }  
+        - { path: ^/api/avis/get, roles: IS_AUTHENTICATED_ANONYMOUSLY }  
+        - { path: ^/api/habitat/get, roles: IS_AUTHENTICATED_ANONYMOUSLY }  
+        - { path: ^/api/race/get, roles: IS_AUTHENTICATED_ANONYMOUSLY }  
+        - { path: ^/api/animal/get, roles: IS_AUTHENTICATED_ANONYMOUSLY }  
+        - { path: ^/api/image/clicks, roles: IS_AUTHENTICATED_ANONYMOUSLY }  
+        - { path: ^/api/image/click, roles: IS_AUTHENTICATED_ANONYMOUSLY }  
         - { path: ^/admin, roles: ROLE_ADMIN }
         - { path: ^/veterinaire, roles: ROLE_VETERINAIRE }
         - { path: ^/employe, roles: ROLE_EMPLOYE }

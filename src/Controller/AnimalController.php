@@ -3,6 +3,10 @@
 namespace App\Controller;
 
 use App\Entity\Animal;
+use App\Entity\Habitat;
+use App\Repository\HabitatRepository;
+use App\Entity\Race;
+use App\Repository\RaceRepository;
 use DateTime;
 use DateTimeImmutable;
 use App\Repository\AnimalRepository;
@@ -16,16 +20,25 @@ class AnimalController extends AbstractController
 {
     private EntityManagerInterface $manager;
     private AnimalRepository $repository;
+    private HabitatRepository $habitatRepository;
+    private RaceRepository $raceRepository;
+
 
     public function __construct(
         EntityManagerInterface $manager,
-        AnimalRepository $repository
+        AnimalRepository $repository,
+        HabitatRepository $habitatRepository,
+        RaceRepository $raceRepository
+
     ) {
         $this->manager = $manager;
         $this->repository = $repository;
+        $this->habitatRepository = $habitatRepository;
+        $this->raceRepository = $raceRepository;
+
     }
 
-    #[Route('', name:'create', methods:['POST'])]
+    #[Route('/post', name:'create', methods:['POST'])]
     public function createAnimal(Request $request): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
@@ -39,7 +52,6 @@ class AnimalController extends AbstractController
         $animal->setPrenom($data['Prenom']);
         $animal->setEtat($data['etat'] ?? null);
         $animal->setNourriture($data['nourriture'] ?? null);
-
         $animal->setGrammage($data['grammage'] ?? null);
 
         // Convertir feeding_time en DateTime
@@ -62,14 +74,43 @@ class AnimalController extends AbstractController
             }
         }
 
+        // Validation et récupération de l'habitat
+        if (isset($data['habitat_id'])) {
+            $habitat = $this->habitatRepository->find($data['habitat_id']);
+            if (!$habitat) {
+                return new JsonResponse(['error' => 'Invalid habitat_id'], Response::HTTP_BAD_REQUEST);
+            }
+            $animal->setHabitat($habitat);
+        } else {
+            return new JsonResponse(['error' => 'habitat_id is required'], Response::HTTP_BAD_REQUEST);
+        }
+
+        
+        // Validation et récupération de la race
+        if (isset($data['race_id'])) {
+            $race = $this->raceRepository->find($data['race_id']);
+            if (!$race) {
+                return new JsonResponse(['error' => 'Invalid race_id'], Response::HTTP_BAD_REQUEST);
+            }
+            $animal->setRace($race);
+        } else {
+            return new JsonResponse(['error' => 'race_id is required'], Response::HTTP_BAD_REQUEST);
+        }
+
+
         $animal->setImageData($data['image_data'] ?? null);
 
-        $this->manager->persist($animal);
-        $this->manager->flush();
+        try {
+            $this->manager->persist($animal);
+            $this->manager->flush();
+        } catch (\Exception $e) {
+            return new JsonResponse(['error' => 'An error occurred while saving the animal: ' . $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
 
-        return new JsonResponse(['message' => 'L'/'animal a été créé correctement'], Response::HTTP_CREATED);
+        return new JsonResponse(['message' => 'Animal created successfully'], Response::HTTP_CREATED);
     }
 
+    
     #[Route('/get', name: 'show', methods: ['GET'])]
     public function show(Request $request): JsonResponse
     {
@@ -83,6 +124,18 @@ class AnimalController extends AbstractController
             $animals = $this->repository->findAll();
         }
     
+
+        // Récupérer le paramètre race_id depuis la requête
+        $raceId = $request->query->get('race_id');
+    
+                // Vérifier si habitat_id est présent et récupérer les animaux associés
+        if ($raceId) {
+            $animals = $this->repository->findBy(['race' => $raceId]);
+        } else {
+            $animals = $this->repository->findAll();
+        }
+
+
         $animalsArray = [];
         
         foreach ($animals as $animal) {
