@@ -35,7 +35,7 @@ class ImageController extends AbstractController
     #[Route('/clicks', name: 'get_clicks', methods: ['GET'])]
     public function getClicks(): JsonResponse
     {
-        $imageNames = ['image1', 'image2']; // Liste des noms d'image connus
+        $imageNames = ['image1', 'image2', 'image3']; // Liste des noms d'image connus
         $clicksData = [];
 
         foreach ($imageNames as $imageName) {

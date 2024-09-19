@@ -23,12 +23,11 @@ class ServiceController extends AbstractController
         $this->repository = $repository;
     }
 
-    #[Route('', name:'create', methods:['POST'])]
+    #[Route('/post', name:'create', methods:['POST'])]
     public function createService(Request $request): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
 
-        // Validation des données
         if (empty($data['nom'])) {
             return new JsonResponse(['error' => 'nom est obligatoire'], Response::HTTP_BAD_REQUEST);
         }

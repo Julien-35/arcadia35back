@@ -35,7 +35,6 @@ class AnimalController extends AbstractController
         $this->repository = $repository;
         $this->habitatRepository = $habitatRepository;
         $this->raceRepository = $raceRepository;
-
     }
 
     #[Route('/post', name:'create', methods:['POST'])]
@@ -84,7 +83,6 @@ class AnimalController extends AbstractController
         } else {
             return new JsonResponse(['error' => 'habitat_id is required'], Response::HTTP_BAD_REQUEST);
         }
-
         
         // Validation et récupération de la race
         if (isset($data['race_id'])) {
@@ -96,7 +94,6 @@ class AnimalController extends AbstractController
         } else {
             return new JsonResponse(['error' => 'race_id is required'], Response::HTTP_BAD_REQUEST);
         }
-
 
         $animal->setImageData($data['image_data'] ?? null);
 
@@ -114,30 +111,23 @@ class AnimalController extends AbstractController
     #[Route('/get', name: 'show', methods: ['GET'])]
     public function show(Request $request): JsonResponse
     {
-        // Récupérer le paramètre habitat_id depuis la requête
         $habitatId = $request->query->get('habitat_id');
-    
-        // Vérifier si habitat_id est présent et récupérer les animaux associés
-        if ($habitatId) {
-            $animals = $this->repository->findBy(['habitat' => $habitatId]);
-        } else {
-            $animals = $this->repository->findAll();
-        }
-    
-
-        // Récupérer le paramètre race_id depuis la requête
         $raceId = $request->query->get('race_id');
-    
-                // Vérifier si habitat_id est présent et récupérer les animaux associés
-        if ($raceId) {
-            $animals = $this->repository->findBy(['race' => $raceId]);
-        } else {
-            $animals = $this->repository->findAll();
-        }
-
-
-        $animalsArray = [];
         
+        $criteria = [];
+        
+        if ($habitatId) {
+            $criteria['habitat'] = $habitatId;
+        }
+        
+        if ($raceId) {
+            $criteria['race'] = $raceId;
+        }
+    
+        $animals = $this->repository->findBy($criteria);
+    
+        $animalsArray = [];
+    
         foreach ($animals as $animal) {
             $animalData = [
                 'id' => $animal->getId(),
@@ -146,11 +136,10 @@ class AnimalController extends AbstractController
                 'nourriture' => $animal->getNourriture(),
                 'grammage' => $animal->getGrammage(),
                 'feeding_time' => $animal->getFeedingTime() ? $animal->getFeedingTime()->format('H:i') : null,
-                'created_at' => $animal->getCreatedAt() ? $animal->getCreatedAt()->format('Y-m-d\TH:i:s') : null,
+                'created_at' => $animal->getCreatedAt() ? $animal->getCreatedAt()->format('d-m-Y') : null,
                 'image_data' => $animal->getImageData(),
                 'habitat' => $animal->getHabitat() ? $animal->getHabitat()->getNom() : null,
                 'race' => $animal->getRace() ? $animal->getRace()->getLabel() : null,
-                // Inclure uniquement si la collection des rapports vétérinaires n'est pas vide
                 'rapport_veterinaire' => $animal->getRapportVeterinaire()->isEmpty() ? [] : array_map(function ($rapport) {
                     return [
                         'detail' => $rapport->getDetail()
@@ -163,6 +152,7 @@ class AnimalController extends AbstractController
     
         return new JsonResponse($animalsArray, Response::HTTP_OK);
     }
+    
     
     
 
