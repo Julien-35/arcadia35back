@@ -34,7 +34,6 @@ security:
         - { path: ^/api/race/get, roles: IS_AUTHENTICATED_ANONYMOUSLY }  
         - { path: ^/api/animal/get, roles: IS_AUTHENTICATED_ANONYMOUSLY }  
         - { path: ^/api/animal, roles: IS_AUTHENTICATED_ANONYMOUSLY }  
-
         - { path: ^/api/image/clicks, roles: IS_AUTHENTICATED_ANONYMOUSLY }  
         - { path: ^/api/image/click, roles: IS_AUTHENTICATED_ANONYMOUSLY }  
         - { path: ^/admin, roles: ROLE_ADMIN }
