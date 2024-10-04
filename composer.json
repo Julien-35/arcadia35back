@@ -38,6 +38,9 @@
         "preferred-install": {
             "*": "dist"
         },
+        "platform": {
+        "php": "8.0"
+        },
         "sort-packages": true
     },
     "autoload": {
