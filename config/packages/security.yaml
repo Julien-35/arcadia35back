@@ -29,6 +29,7 @@ security:
         - { path: ^/api/horaire/, roles: IS_AUTHENTICATED_ANONYMOUSLY }  
         - { path: ^/api/horaire/get, roles: IS_AUTHENTICATED_ANONYMOUSLY }  
         - { path: ^/api/avis/get, roles: IS_AUTHENTICATED_ANONYMOUSLY }  
+        - { path: ^/api/avis/post, roles: IS_AUTHENTICATED_ANONYMOUSLY }  
         - { path: ^/api/habitat/get, roles: IS_AUTHENTICATED_ANONYMOUSLY }         
         - { path: ^/api/habitat, roles: IS_AUTHENTICATED_ANONYMOUSLY }  
         - { path: ^/api/race/get, roles: IS_AUTHENTICATED_ANONYMOUSLY }  
