@@ -48,11 +48,16 @@ class HabitatController extends AbstractController
         return new JsonResponse(['message' => 'Habitat created successfully'], Response::HTTP_CREATED);
     }
 
-    #[Route('/get', name:'show', methods:['GET'])]
+
+    #[Route('/get', name: 'show', methods: ['GET'])]
     public function show(): JsonResponse
     {
         $habitats = $this->repository->findAll();
-
+    
+        if (empty($habitats)) {
+            return new JsonResponse(['message' => 'Aucun habitat trouvé'], Response::HTTP_NOT_FOUND);
+        }
+    
         $habitatsArray = [];
         foreach ($habitats as $habitat) {
             $habitatsArray[] = [
@@ -63,8 +68,9 @@ class HabitatController extends AbstractController
                 'image_data' => $habitat->getImageData()
             ];
         }
-
-        return new JsonResponse($habitatsArray, Response::HTTP_OK);
+        // Log pour déboguer la réponse
+        $response = new JsonResponse($habitatsArray, Response::HTTP_OK);
+        return $response; 
     }
 
     #[Route('/{id}', name:'edit', methods:['PUT'])]

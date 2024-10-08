@@ -44,15 +44,19 @@ class RaceController extends AbstractController
         return new JsonResponse(['message' => 'La Race a été créé correctement'], Response::HTTP_CREATED);
     }
 
+
     #[Route('/get', name:'show', methods:['GET'])]
     public function show(): JsonResponse
     {
+        // Récupérer toutes les races
         $races = $this->repository->findAll();
-    
+        
+        // Vérifier si aucune race n'est trouvé
         if (empty($races)) {
             return new JsonResponse(['message' => 'Aucun race trouvé'], Response::HTTP_NOT_FOUND);
         }
-    
+        
+        // Initialiser un tableau pour les races
         $racesArray = [];
         foreach ($races as $race) {
             $racesArray[] = [
@@ -60,10 +64,11 @@ class RaceController extends AbstractController
                 'label' => $race->getLabel(),
             ];
         }
-    
+        
+        // Retourner la réponse JSON avec le tableau d'horaire
         return new JsonResponse($racesArray, Response::HTTP_OK);
     }
-
+    
     #[Route('/{id}', name:'edit', methods:['PUT'])]
     public function updateRace(Request $request, $id): JsonResponse
     {

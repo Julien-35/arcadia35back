@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\RapportVeterinaire;
+use App\Entity\Animal;
+use App\Repository\AnimalRepository;
 use App\Repository\RapportVeterinaireRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\{JsonResponse, Request, Response};
@@ -15,15 +17,19 @@ class RapportVeterinaireController extends AbstractController
     private EntityManagerInterface $manager;
     private RapportVeterinaireRepository $repository;
 
+
     public function __construct(
         EntityManagerInterface $manager,
-        RapportVeterinaireRepository $repository
+        RapportVeterinaireRepository $repository,
+
     ) {
         $this->manager = $manager;
         $this->repository = $repository;
+        $this->animalRepository = $animalRepository;
+
     }
 
-    #[Route('', name: 'create', methods: ['POST'])]
+    #[Route('/post', name: 'create', methods: ['POST'])]
     public function create(Request $request): JsonResponse
     {
         $data = json_decode($request->getContent(), true);

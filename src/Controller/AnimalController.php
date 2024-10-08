@@ -111,11 +111,13 @@ class AnimalController extends AbstractController
     #[Route('/get', name: 'show', methods: ['GET'])]
     public function show(Request $request): JsonResponse
     {
+        // Récupérer les paramètres de requête
         $habitatId = $request->query->get('habitat_id');
         $raceId = $request->query->get('race_id');
         
         $criteria = [];
         
+        // Ajouter des critères de recherche basés sur les paramètres de la requête
         if ($habitatId) {
             $criteria['habitat'] = $habitatId;
         }
@@ -124,11 +126,19 @@ class AnimalController extends AbstractController
             $criteria['race'] = $raceId;
         }
     
+        // Trouver les animaux en fonction des critères
         $animals = $this->repository->findBy($criteria);
     
+        // Vérifier si des animaux ont été trouvés
+        if (empty($animals)) {
+            return new JsonResponse(['message' => 'Aucun animal trouvé'], Response::HTTP_NOT_FOUND);
+        }
+    
+        // Préparer le tableau de réponse
         $animalsArray = [];
     
         foreach ($animals as $animal) {
+            // Créer les données de chaque animal
             $animalData = [
                 'id' => $animal->getId(),
                 'prenom' => $animal->getPrenom(),
@@ -138,8 +148,8 @@ class AnimalController extends AbstractController
                 'feeding_time' => $animal->getFeedingTime() ? $animal->getFeedingTime()->format('H:i') : null,
                 'created_at' => $animal->getCreatedAt() ? $animal->getCreatedAt()->format('d-m-Y') : null,
                 'image_data' => $animal->getImageData(),
-                'habitat' => $animal->getHabitat() ? $animal->getHabitat()->getNom() : null,
-                'race' => $animal->getRace() ? $animal->getRace()->getLabel() : null,
+                'habitat' => $animal->getHabitat() ? $animal->getHabitat()->getNom() : null,  // Vérification de l'existence du habitat
+                'race' => $animal->getRace() ? $animal->getRace()->getLabel() : null,        // Vérification de l'existence de la race
                 'rapport_veterinaire' => $animal->getRapportVeterinaire()->isEmpty() ? [] : array_map(function ($rapport) {
                     return [
                         'detail' => $rapport->getDetail()
@@ -147,26 +157,27 @@ class AnimalController extends AbstractController
                 }, $animal->getRapportVeterinaire()->toArray())
             ];
     
+            // Ajouter les données de l'animal au tableau
             $animalsArray[] = $animalData;
         }
     
+        // Retourner la réponse JSON avec le tableau des animaux
         return new JsonResponse($animalsArray, Response::HTTP_OK);
     }
     
     
     
-
     #[Route('/{id}', name:'edit', methods:['PUT'])]
     public function updateAnimal(Request $request, $id): JsonResponse
     {
         $animal = $this->manager->getRepository(Animal::class)->find($id);
-
+    
         if (!$animal) {
             return new JsonResponse(['error' => 'Animal not found'], Response::HTTP_NOT_FOUND);
         }
-
+    
         $data = json_decode($request->getContent(), true);
-
+    
         if (isset($data['prenom'])) {
             $animal->setPrenom($data['prenom']);
         }
@@ -198,13 +209,26 @@ class AnimalController extends AbstractController
         if (isset($data['image_data'])) {
             $animal->setImageData($data['image_data']);
         }
-
+    
         $this->manager->persist($animal);
         $this->manager->flush();
-
-        return new JsonResponse(['message' => 'Animal mis à jour correctement'], Response::HTTP_OK);
+    
+        // Renvoyer les nouvelles données de l'animal mis à jour
+        return new JsonResponse([
+            'message' => 'Animal mis à jour correctement',
+            'animal' => [
+                'id' => $animal->getId(),
+                'prenom' => $animal->getPrenom(),
+                'etat' => $animal->getEtat(),
+                'nourriture' => $animal->getNourriture(),
+                'grammage' => $animal->getGrammage(),
+                'feeding_time' => $animal->getFeedingTime()->format('H:i'), // format "HH:mm"
+                'created_at' => $animal->getCreatedAt()->format('Y-m-d'), // format "YYYY-MM-DD"
+                'image_data' => $animal->getImageData(),
+            ]
+        ], Response::HTTP_OK);
     }
-
+    
     #[Route('/{id}', name:'delete', methods:['DELETE'])]
     public function delete(int $id): JsonResponse
     {
