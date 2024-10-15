@@ -1,19 +1,19 @@
 nelmio_cors:
     defaults:
-        allow_origin: ['https://arcadia-broceliande.netlify.app','http://localhost:3000','http://localhost:8000','https://arcadia35380-f680d3a74682.herokuapp.com']  # Autorise toutes les origines
+        allow_origin: ['*']  # Autorise toutes les origines
         allow_methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
         allow_headers: ['Content-Type', 'Authorization', 'X-AUTH-TOKEN']
         expose_headers: ['Link']
         max_age: 3600
     paths:
         '^/api/': 
-            allow_origin: ['https://arcadia-broceliande.netlify.app','http://localhost:3000','http://localhost:8000','https://arcadia35380-f680d3a74682.herokuapp.com']  # Autorise toutes les origines pour les API
+            allow_origin: ['*']  # Autorise toutes les origines pour les API
             allow_methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
             allow_headers: ['Content-Type', 'Authorization', 'X-AUTH-TOKEN']
             expose_headers: ['Link']
             max_age: 3600
         '^/image/':
-            allow_origin: ['https://arcadia-broceliande.netlify.app','http://localhost:3000','http://localhost:8000','https://arcadia35380-f680d3a74682.herokuapp.com']  # Autorise toutes les origines pour les images
+            allow_origin: ['*']  # Autorise toutes les origines pour les images
             allow_methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
             allow_headers: ['Content-Type', 'Authorization', 'X-AUTH-TOKEN']
             expose_headers: ['Link']
