@@ -114,5 +114,8 @@
         "files": [
             "./config/packages/security.yaml"
         ]
+    },
+    "symfony/twig-bundle": {
+        "version": "v5.4.40"
     }
 }

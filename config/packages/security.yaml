@@ -24,11 +24,13 @@ security:
 
     access_control:
         - { path: ^/api/registration, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/service/get, roles: IS_AUTHENTICATED_ANONYMOUSLY }  
         - { path: ^/api/service, roles: IS_AUTHENTICATED_ANONYMOUSLY }  
         - { path: ^/api/horaire/, roles: IS_AUTHENTICATED_ANONYMOUSLY }  
         - { path: ^/api/horaire/get, roles: IS_AUTHENTICATED_ANONYMOUSLY }  
         - { path: ^/api/avis/get, roles: IS_AUTHENTICATED_ANONYMOUSLY }  
+        - { path: ^/api/avis/, roles: IS_AUTHENTICATED_ANONYMOUSLY }  
         - { path: ^/api/avis/post, roles: IS_AUTHENTICATED_ANONYMOUSLY }  
         - { path: ^/api/habitat/get, roles: IS_AUTHENTICATED_ANONYMOUSLY }         
         - { path: ^/api/habitat, roles: IS_AUTHENTICATED_ANONYMOUSLY }  
@@ -40,4 +42,5 @@ security:
         - { path: ^/admin, roles: ROLE_ADMIN }
         - { path: ^/veterinaire, roles: ROLE_VETERINAIRE }
         - { path: ^/employe, roles: ROLE_EMPLOYE }
-        - { path: ^/, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api, roles: ROLE_USER } 
+        - { path: ^/, roles: IS_AUTHENTICATED_ANONYMOUSLY }  
