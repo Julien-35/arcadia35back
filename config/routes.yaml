@@ -8,5 +8,11 @@ horaire_list:
     controller: App\Controller\HoraireController::list
 
 avis_get:
-    path: /api/avis/get
-    controller: App\Controller\AvisController::getAvis
+    path: /api/avis
+    controller: App\Controller\AvisController::/
+    methods: [GET]
+
+api_service_get:
+    path: /api/service/get
+    controller: App\Controller\ServiceController::getService
+    methods: [GET]
