@@ -1,19 +1,20 @@
 nelmio_cors:
     defaults:
-        allow_origin: ['https://arcadia-broceliande.netlify.app','https://localhost:8000']  # Autorise toutes les origines
-        allow_methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
-        allow_headers: ['Content-Type', 'Authorization', 'X-AUTH-TOKEN']
-        expose_headers: ['Link']
-        max_age: 3600
+        allow_origin: ['https://arcadia35380-f680d3a74682.herokuapp.com', 'http://localhost:8000', 'http://localhost:3000']  # Les origines autorisées
+        allow_methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']  # Les méthodes HTTP autorisées
+        allow_headers: ['Content-Type', 'Authorization', 'X-AUTH-TOKEN']  # Les en-têtes autorisés dans les requêtes
+        expose_headers: ['Link']  # Les en-têtes que le client peut voir
+        max_age: 3600  # Durée de vie du cache pour la réponse CORS
+        allow_credentials: false  # Interdit l'utilisation des cookies avec CORS
     paths:
-        '^/api/': 
-            allow_origin: ['https://arcadia-broceliande.netlify.app','https://localhost:8000']  # Autorise toutes les origines pour les API
+        '^/api/':  # Appliquer ces règles sur toutes les routes de l'API
+            allow_origin: ['https://arcadia35380-f680d3a74682.herokuapp.com', 'http://localhost:8000', 'http://localhost:3000']
             allow_methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
             allow_headers: ['Content-Type', 'Authorization', 'X-AUTH-TOKEN']
             expose_headers: ['Link']
             max_age: 3600
-        '^/image/':
-            allow_origin: ['https://arcadia-broceliande.netlify.app','https://localhost:8000']  # Autorise toutes les origines pour les images
+        '^/image/':  # Appliquer ces règles aux chemins qui commencent par /image
+            allow_origin: ['https://arcadia35380-f680d3a74682.herokuapp.com', 'http://localhost:8000', 'http://localhost:3000']
             allow_methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
             allow_headers: ['Content-Type', 'Authorization', 'X-AUTH-TOKEN']
             expose_headers: ['Link']
