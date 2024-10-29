@@ -82,6 +82,7 @@ class SecurityController extends AbstractController
             'roles' => $user->getRoles(),
         ]);
     }
+    
 
     #[Route('/admin', name: 'show', methods: 'GET')]
     public function show(#[CurrentUser] ?User $user): JsonResponse
