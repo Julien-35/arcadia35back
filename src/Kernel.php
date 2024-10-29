@@ -3,7 +3,7 @@
 namespace App;
 
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
-use Symfony\Bundle\WebpackEncoreBundle\WebpackEncoreBundle; // Ajoute cette ligne
+use Symfony\Bundle\WebpackEncoreBundle\WebpackEncoreBundle; 
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Component\HttpKernel\Kernel as BaseKernel;
 
