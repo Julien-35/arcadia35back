@@ -12,19 +12,20 @@ class Kernel extends BaseKernel
     use MicroKernelTrait;
 
     // Ajoute la méthode registerBundles
-    protected function registerBundles(): iterable
+    public function registerBundles(): iterable
     {
         $bundles = [
             new FrameworkBundle(),
             new WebpackEncoreBundle(), // Enregistre le bundle Webpack Encore ici
-            // Ajoute d'autres bundles nécessaires
+            // Ajoutez d'autres bundles nécessaires
         ];
-
-        // Ajoute les bundles pour l'environnement de développement
+    
+        // Ajoutez les bundles pour l'environnement de développement
         if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {
-            // Ajoute d'autres bundles pour dev/test si nécessaire
+            // Ajoutez d'autres bundles pour dev/test si nécessaire
         }
-
+    
         return $bundles;
     }
+    
 }
