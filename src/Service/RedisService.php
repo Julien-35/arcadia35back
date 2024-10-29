@@ -2,24 +2,24 @@
 
 namespace App\Service;
 
-use Predis\Client;
+use Redis;
 
 class RedisService
 {
-    private Client $redisClient;
+    private Redis $redis;
 
-    public function __construct(Client $redisClient)
+    public function __construct(Redis $redis) // Garder cette signature
     {
-        $this->redisClient = $redisClient;
+        $this->redis = $redis;
     }
 
-    public function incrementImageClicks(string $imageName): void
+    public function incrementVisits(int $animalId): void
     {
-        $this->redisClient->incr('image_clicks:' . $imageName);
+        $this->redis->incr('animal_visits:' . $animalId);
     }
 
-    public function getImageClicks(string $imageName): int
+    public function getVisits(int $animalId): int
     {
-        return (int) $this->redisClient->get('image_clicks:' . $imageName);
+        return (int)$this->redis->get('animal_visits:' . $animalId);
     }
 }

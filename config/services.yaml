@@ -1,4 +1,3 @@
-# config/services.yaml
 services:
     _defaults:
         autowire: true
@@ -11,12 +10,18 @@ services:
             - '../src/Entity/'
             - '../src/Kernel.php'
 
-    # Explicitly configure the Predis\Client service
-    Predis\Client:
-        arguments:
-            - { host: 'localhost', port: 6379 }
-
     # Correct the ApiTokenAuthenticator service definition
     App\Security\ApiTokenAuthenticator:
         arguments:
             - '@App\Repository\UserRepository'
+
+    # Configure le service Redis
+    Redis:
+        class: Redis
+        calls:
+            - method: connect
+              arguments: ['redis', 6379]  # Utiliser le nom du service Redis
+
+    App\Service\RedisService:
+        arguments:
+            $redis: '@Redis'  # Assurez-vous que Redis est injecté correctement

@@ -34,6 +34,9 @@ class Animal
     #[ORM\Column(type: Types::TEXT, nullable: true, length: 500000)]
     private ?string $image_data = null;
 
+    #[ORM\Column(type: 'integer', options: ["default" => 0])]
+    private $visits = 0; 
+
     #[ORM\ManyToOne(inversedBy: 'animal')]
     private ?Habitat $habitat = null;
 
@@ -196,4 +199,14 @@ class Animal
         return $this;
     }
 
+    public function getVisits(): int
+    {
+        return $this->visits;
+    }
+
+    public function setVisits(int $visits): self
+    {
+        $this->visits = $visits;
+        return $this;
+    }
 }

@@ -14,6 +14,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\{JsonResponse, Request, Response};
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Service\RedisService;
 
 #[Route('/api/animal', name:'app_api_arcadia_animal_')]
 class AnimalController extends AbstractController
@@ -22,19 +23,20 @@ class AnimalController extends AbstractController
     private AnimalRepository $repository;
     private HabitatRepository $habitatRepository;
     private RaceRepository $raceRepository;
-
+    private RedisService $redisService;
 
     public function __construct(
         EntityManagerInterface $manager,
         AnimalRepository $repository,
         HabitatRepository $habitatRepository,
-        RaceRepository $raceRepository
-
+        RaceRepository $raceRepository,
+        RedisService $redisService
     ) {
         $this->manager = $manager;
         $this->repository = $repository;
         $this->habitatRepository = $habitatRepository;
         $this->raceRepository = $raceRepository;
+        $this->redisService = $redisService; // Initialisation du service Redis
     }
 
     #[Route('/post', name:'create', methods:['POST'])]
@@ -83,7 +85,7 @@ class AnimalController extends AbstractController
         } else {
             return new JsonResponse(['error' => 'habitat_id is required'], Response::HTTP_BAD_REQUEST);
         }
-        
+
         // Validation et récupération de la race
         if (isset($data['race_id'])) {
             $race = $this->raceRepository->find($data['race_id']);
@@ -107,37 +109,49 @@ class AnimalController extends AbstractController
         return new JsonResponse(['message' => 'Animal created successfully'], Response::HTTP_CREATED);
     }
 
-    
+
+    #[Route('/{id}/increment', name:'increment_visits', methods:['POST'])]
+    public function incrementVisits($id): JsonResponse
+    {
+        // Récupérer l'animal
+        $animal = $this->repository->find($id);
+        if (!$animal) {
+            return new JsonResponse(['error' => 'Animal not found'], Response::HTTP_NOT_FOUND);
+        }
+
+        // Incrémenter le compteur dans Redis
+        $this->redisService->incrementVisits($id);
+
+        return new JsonResponse(['message' => 'Visits incremented'], Response::HTTP_OK);
+    }
+
     #[Route('/get', name: 'show', methods: ['GET'])]
     public function show(Request $request): JsonResponse
     {
-        // Récupérer les paramètres de requête
         $habitatId = $request->query->get('habitat_id');
         $raceId = $request->query->get('race_id');
-        
+
         $criteria = [];
-        
-        // Ajouter des critères de recherche basés sur les paramètres de la requête
+
         if ($habitatId) {
             $criteria['habitat'] = $habitatId;
         }
-        
+
         if ($raceId) {
             $criteria['race'] = $raceId;
         }
-    
-        // Trouver les animaux en fonction des critères
+
         $animals = $this->repository->findBy($criteria);
-    
-        // Vérifier si des animaux ont été trouvés
+
         if (empty($animals)) {
             return new JsonResponse(['message' => 'Aucun animal trouvé'], Response::HTTP_NOT_FOUND);
         }
-    
-        // Préparer le tableau de réponse
+
         $animalsArray = [];
-    
         foreach ($animals as $animal) {
+            // Obtenir le nombre de visites
+            $visits = $this->redisService->getVisits($animal->getId());
+
             // Créer les données de chaque animal
             $animalData = [
                 'id' => $animal->getId(),
@@ -148,36 +162,33 @@ class AnimalController extends AbstractController
                 'feeding_time' => $animal->getFeedingTime() ? $animal->getFeedingTime()->format('H:i') : null,
                 'created_at' => $animal->getCreatedAt() ? $animal->getCreatedAt()->format('d-m-Y') : null,
                 'image_data' => $animal->getImageData(),
-                'habitat' => $animal->getHabitat() ? $animal->getHabitat()->getNom() : null,  // Vérification de l'existence du habitat
-                'race' => $animal->getRace() ? $animal->getRace()->getLabel() : null,        // Vérification de l'existence de la race
+                'visits' => $visits, 
+                'habitat' => $animal->getHabitat() ? $animal->getHabitat()->getNom() : null,
+                'race' => $animal->getRace() ? $animal->getRace()->getLabel() : null,
                 'rapport_veterinaire' => $animal->getRapportVeterinaire()->isEmpty() ? [] : array_map(function ($rapport) {
                     return [
                         'detail' => $rapport->getDetail()
                     ];
                 }, $animal->getRapportVeterinaire()->toArray())
             ];
-    
-            // Ajouter les données de l'animal au tableau
+
             $animalsArray[] = $animalData;
         }
-    
-        // Retourner la réponse JSON avec le tableau des animaux
+
         return new JsonResponse($animalsArray, Response::HTTP_OK);
     }
-    
-    
-    
+
     #[Route('/{id}', name:'edit', methods:['PUT'])]
     public function updateAnimal(Request $request, $id): JsonResponse
     {
         $animal = $this->manager->getRepository(Animal::class)->find($id);
-    
+
         if (!$animal) {
             return new JsonResponse(['error' => 'Animal not found'], Response::HTTP_NOT_FOUND);
         }
-    
+
         $data = json_decode($request->getContent(), true);
-    
+
         if (isset($data['prenom'])) {
             $animal->setPrenom($data['prenom']);
         }
@@ -209,10 +220,10 @@ class AnimalController extends AbstractController
         if (isset($data['image_data'])) {
             $animal->setImageData($data['image_data']);
         }
-    
+
         $this->manager->persist($animal);
         $this->manager->flush();
-    
+
         // Renvoyer les nouvelles données de l'animal mis à jour
         return new JsonResponse([
             'message' => 'Animal mis à jour correctement',
@@ -228,7 +239,7 @@ class AnimalController extends AbstractController
             ]
         ], Response::HTTP_OK);
     }
-    
+
     #[Route('/{id}', name:'delete', methods:['DELETE'])]
     public function delete(int $id): JsonResponse
     {

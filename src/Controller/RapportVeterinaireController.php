@@ -16,17 +16,19 @@ class RapportVeterinaireController extends AbstractController
 {
     private EntityManagerInterface $manager;
     private RapportVeterinaireRepository $repository;
+    private AnimalRepository $animalRepository;
+
 
 
     public function __construct(
         EntityManagerInterface $manager,
         RapportVeterinaireRepository $repository,
+        AnimalRepository $animalRepository,
 
     ) {
         $this->manager = $manager;
         $this->repository = $repository;
-        $this->animalRepository = $animalRepository;
-
+        $this->animalRepository = $animalRepository; // Initialiser
     }
 
     #[Route('/post', name: 'create', methods: ['POST'])]
