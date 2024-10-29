@@ -26,6 +26,7 @@
         "symfony/security-bundle": "5.4.*",
         "symfony/serializer": "5.4.*",
         "symfony/twig-bundle": "5.4.*",
+        "symfony/webpack-encore-bundle": "*",
         "symfony/yaml": "5.4.*"
     },
     "config": {
@@ -81,7 +82,6 @@
         }
     },
     "require-dev": {
-        "symfony/maker-bundle": "^1.50",
-        "symfony/webpack-encore-bundle": "^1.0" 
+        "symfony/maker-bundle": "^1.50" 
     }
 }
