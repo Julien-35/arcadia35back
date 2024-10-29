@@ -26,6 +26,5 @@ class Kernel extends BaseKernel
         }
     
         return $bundles;
-    }
-    
+    }    
 }
