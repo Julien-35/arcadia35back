@@ -26,7 +26,7 @@
         "symfony/security-bundle": "5.4.*",
         "symfony/serializer": "5.4.*",
         "symfony/twig-bundle": "5.4.*",
-        "symfony/webpack-encore-bundle": "*",
+        "symfony/webpack-encore-bundle": "^2.2",
         "symfony/yaml": "5.4.*"
     },
     "config": {
