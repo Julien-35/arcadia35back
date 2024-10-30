@@ -20,5 +20,8 @@ services:
         class: Redis
         calls:
             - method: connect
-              arguments:
-                - '%env(REDISCLOUD_URL)%'
+              arguments: ['redis', 6379]  # Utiliser le nom du service Redis
+
+    App\Service\RedisService:
+        arguments:
+            $redis: '@Redis'  # Assurez-vous que Redis est injecté correctement

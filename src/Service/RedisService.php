@@ -8,7 +8,7 @@ class RedisService
 {
     private Redis $redis;
 
-    public function __construct(Redis $redis) // Garder cette signature
+    public function __construct(Redis $redis) 
     {
         $this->redis = $redis;
     }
