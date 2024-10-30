@@ -1,0 +1,13 @@
+# config/services_prod.yaml
+
+services:
+    App\Service\RedisService:
+        arguments:
+            $redis: '@redis'
+
+    redis:
+        class: Redis
+        calls:
+            - method: connect
+              arguments: 
+                - '%env(REDISCLOUD_URL)%'  # Utilisation de l'URL de production
