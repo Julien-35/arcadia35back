@@ -6,22 +6,20 @@ use Redis;
 
 class RedisService
 {
-    private $redis;
+    private Redis $redis;
 
-    public function __construct(Redis $redis)
+    public function __construct(Redis $redis) // Garder cette signature
     {
         $this->redis = $redis;
     }
 
-    public function getRedis(): Redis
+    public function incrementVisits(int $animalId): void
     {
-        return $this->redis;
+        $this->redis->incr('animal_visits:' . $animalId);
     }
 
-    public function getVisits($animalId)
+    public function getVisits(int $animalId): int
     {
-        return $this->redis->get("animal:{$animalId}:visits");
+        return (int)$this->redis->get('animal_visits:' . $animalId);
     }
-
-    // Vous pouvez ajouter d'autres méthodes pour interagir avec Redis
 }
