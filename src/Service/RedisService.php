@@ -8,9 +8,11 @@ class RedisService
 {
     private Redis $redis;
 
-    public function __construct(Redis $redis) // Garder cette signature
+    public function __construct() // Pas besoin de passer Redis ici
     {
-        $this->redis = $redis;
+        $this->redis = new Redis();
+        $this->redis->connect(parse_url(getenv('REDIS_URL'), PHP_URL_HOST), parse_url(getenv('REDIS_URL'), PHP_URL_PORT));
+        $this->redis->auth(parse_url(getenv('REDIS_URL'), PHP_URL_USER));
     }
 
     public function incrementVisits(int $animalId): void
