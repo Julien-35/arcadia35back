@@ -5,6 +5,9 @@ services:
         arguments:
             $redis: '@redis'
 
-    Predis\Client:
-        arguments:
-            $parameters: '%env(REDIS_URL)%'
+    redis:
+        class: Redis
+        calls:
+            - method: connect
+              arguments: 
+                - '%env(REDISCLOUD_URL)%'  # Utilisation de l'URL de production
