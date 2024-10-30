@@ -6,27 +6,22 @@ use Redis;
 
 class RedisService
 {
-    private Redis $redis;
+    private $redis;
 
-    public function __construct()
+    public function __construct(Redis $redis)
     {
-        $this->redis = new Redis();
-        $this->redis->connect(parse_url(getenv('REDIS_URL'), PHP_URL_HOST), parse_url(getenv('REDIS_URL'), PHP_URL_PORT));
-
-        // Vérifiez si l'authentification est nécessaire
-        $password = parse_url(getenv('REDIS_URL'), PHP_URL_PASS);
-        if ($password) {
-            $this->redis->auth($password);
-        }
+        $this->redis = $redis;
     }
 
-    public function incrementVisits(int $animalId): void
+    public function getRedis(): Redis
     {
-        $this->redis->incr('animal_visits:' . $animalId);
+        return $this->redis;
     }
 
-    public function getVisits(int $animalId): int
+    public function getVisits($animalId)
     {
-        return (int) $this->redis->get('animal_visits:' . $animalId);
+        return $this->redis->get("animal:{$animalId}:visits");
     }
+
+    // Vous pouvez ajouter d'autres méthodes pour interagir avec Redis
 }
