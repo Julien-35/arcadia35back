@@ -14,9 +14,9 @@ class RedisService
 
         // Connexion à Redis
         try {
-            $this->redis->connect(parse_url(getenv('REDIS_URL'))['host'], parse_url(getenv('REDIS_URL'))['port']);
-            if (isset(parse_url(getenv('REDIS_URL'))['pass'])) {
-                $this->redis->auth(parse_url(getenv('REDIS_URL'))['pass']);
+            $this->redis->connect(parse_url(getenv('REDISCLOUD_URL'))['host'], parse_url(getenv('REDISCLOUD_URL'))['port']);
+            if (isset(parse_url(getenv('REDISCLOUD_URL'))['pass'])) {
+                $this->redis->auth(parse_url(getenv('REDISCLOUD_URL'))['pass']);
             }
         } catch (\Exception $e) {
             // Gérer l'erreur de connexion

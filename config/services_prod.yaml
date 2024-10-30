@@ -10,4 +10,4 @@ services:
         calls:
             - method: connect
               arguments: 
-                - '%env(REDIS_URL)%'  # Utilisation de l'URL de production
+                - '%env(REDISCLOUD_URL)%'  # Utilisation de l'URL de production

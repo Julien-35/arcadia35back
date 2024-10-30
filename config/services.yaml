@@ -21,7 +21,7 @@ services:
         calls:
             - method: connect
               arguments:
-                  - '%env(REDIS_URL)%' # Pour production
+                  - '%env(REDISCLOUD_URL)%' # Pour production
                   - 0 # 0 est généralement utilisé pour le port par défaut
     
     App\Service\RedisService:
