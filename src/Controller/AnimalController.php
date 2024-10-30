@@ -130,53 +130,46 @@ class AnimalController extends AbstractController
     {
         $habitatId = $request->query->get('habitat_id');
         $raceId = $request->query->get('race_id');
-
+    
         $criteria = [];
-
         if ($habitatId) {
             $criteria['habitat'] = $habitatId;
         }
-
         if ($raceId) {
             $criteria['race'] = $raceId;
         }
-
+    
         $animals = $this->repository->findBy($criteria);
-
+        error_log('Criteria: ' . json_encode($criteria));
+        error_log('Animals found: ' . count($animals));
+    
         if (empty($animals)) {
             return new JsonResponse(['message' => 'Aucun animal trouvé'], Response::HTTP_NOT_FOUND);
         }
-
+    
         $animalsArray = [];
         foreach ($animals as $animal) {
-            // Obtenir le nombre de visites
-            $visits = $this->redisService->getVisits($animal->getId());
-
-            // Créer les données de chaque animal
+            $visits = 0; // Valeur par défaut
+            try {
+                $visits = $this->redisService->getVisits($animal->getId());
+            } catch (\Exception $e) {
+                error_log('Redis error: ' . $e->getMessage());
+            }
+    
             $animalData = [
                 'id' => $animal->getId(),
                 'prenom' => $animal->getPrenom(),
-                'etat' => $animal->getEtat(),
-                'nourriture' => $animal->getNourriture(),
-                'grammage' => $animal->getGrammage(),
-                'feeding_time' => $animal->getFeedingTime() ? $animal->getFeedingTime()->format('H:i') : null,
-                'created_at' => $animal->getCreatedAt() ? $animal->getCreatedAt()->format('d-m-Y') : null,
-                'image_data' => $animal->getImageData(),
-                'visits' => $visits, 
-                'habitat' => $animal->getHabitat() ? $animal->getHabitat()->getNom() : null,
-                'race' => $animal->getRace() ? $animal->getRace()->getLabel() : null,
-                'rapport_veterinaire' => $animal->getRapportVeterinaire()->isEmpty() ? [] : array_map(function ($rapport) {
-                    return [
-                        'detail' => $rapport->getDetail()
-                    ];
-                }, $animal->getRapportVeterinaire()->toArray())
+                // Autres propriétés...
+                'visits' => $visits,
+                // Reste du code...
             ];
-
+    
             $animalsArray[] = $animalData;
         }
-
+    
         return new JsonResponse($animalsArray, Response::HTTP_OK);
     }
+    
 
     #[Route('/{id}', name:'edit', methods:['PUT'])]
     public function updateAnimal(Request $request, $id): JsonResponse
