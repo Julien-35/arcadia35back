@@ -3,4 +3,4 @@ framework:
         pools:
             my_cache_pool:
                 adapter: cache.adapter.redis
-                provider: '%env(REDIS_URL)%'
+                provider: redis://default:ryBQBgjgcacWxRkwF373eRYgquNHjpH1@redis-14768.c233.eu-west-1-1.ec2.redns.redis-cloud.com:14768

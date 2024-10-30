@@ -1,17 +1,19 @@
 <?php
 
-require 'vendor/autoload.php'; // Chargez l'autoload de Composer
+require 'vendor/autoload.php'; // Assurez-vous que l'autoload de Composer est chargé
 
-$client = new Predis\Client([
-    'scheme' => 'tcp',
-    'host' => 'ec2-54-220-89-179.eu-west-1.compute.amazonaws.com', // Remplacez par votre hôte Redis
-    'port' => 32380,
-    'password' => 'p413454e4afee40d5654397dcd27d7b0e753b5adf13b4cc901445bd130a5059c5', // Remplacez par votre mot de passe
-]);
+// Connexion à Redis
+$client = new Predis\Client(getenv('REDIS_URL')); // Utiliser REDIS_URL depuis les variables d'environnement
 
 try {
-    $client->connect();
-    echo "Connexion à Redis réussie!";
+    // Tester une opération simple
+    $client->set('test_key', 'Hello Redis');
+    $value = $client->get('test_key');
+    
+    echo "La valeur de 'test_key' est : $value\n";
+
+    // Supprimer la clé après le test
+    $client->del('test_key');
 } catch (Exception $e) {
-    echo "Erreur de connexion à Redis: " . $e->getMessage();
+    echo "Erreur de connexion à Redis : " . $e->getMessage() . "\n";
 }
