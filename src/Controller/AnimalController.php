@@ -119,8 +119,11 @@ class AnimalController extends AbstractController
             return new JsonResponse(['error' => 'Animal not found'], Response::HTTP_NOT_FOUND);
         }
 
-        // Incrémenter le compteur dans Redis
-        $this->redisService->incrementVisits($id);
+        try {
+            $visits = $this->redisService->getVisits($animal->getId());
+        } catch (\Exception $e) {
+            $visits = 0; 
+        }
 
         return new JsonResponse(['message' => 'Visits incremented'], Response::HTTP_OK);
     }
@@ -150,8 +153,12 @@ class AnimalController extends AbstractController
         $animalsArray = [];
         foreach ($animals as $animal) {
             // Obtenir le nombre de visites
-            $visits = $this->redisService->getVisits($animal->getId());
-
+            try {
+                $visits = $this->redisService->getVisits($animal->getId());
+            } catch (\Exception $e) {
+                $visits = 0;
+            }
+            
             // Créer les données de chaque animal
             $animalData = [
                 'id' => $animal->getId(),
