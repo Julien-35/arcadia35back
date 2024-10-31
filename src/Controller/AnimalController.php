@@ -14,7 +14,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\{JsonResponse, Request, Response};
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use App\Service\RedisService; 
+use Redis;
 
 #[Route('/api/animal', name:'app_api_arcadia_animal_')]
 class AnimalController extends AbstractController
