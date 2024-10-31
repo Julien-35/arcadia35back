@@ -2,7 +2,7 @@
 
 namespace App\Factory;
 
-use Predis\Client; // ou Redis si vous utilisez l'extension Redis
+use Predis\Client;
 
 class RedisFactory
 {
@@ -13,8 +13,7 @@ class RedisFactory
         $this->redisUrl = $redisUrl;
     }
 
-    public function create(): Client
-    {
+    public function createRedis(): Client {
         return new Client($this->redisUrl);
     }
 }
