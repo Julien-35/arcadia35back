@@ -6,14 +6,13 @@ use Redis;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 
-class RedisService
-{
-    private Redis $redis;
+class RedisService {
+    private $redis;
 
-    public function __construct(Redis $redis)
-    {
+    public function __construct(Redis $redis) {
         $this->redis = $redis;
     }
+
 
     public function incrementVisits(int $animalId): void
     {
