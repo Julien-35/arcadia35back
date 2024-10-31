@@ -12,18 +12,19 @@ class RedisService
     public function __construct(string $redisUrl)
     {
         $this->redis = new Redis();
-
+        
         try {
             $this->redis->connect(parse_url($redisUrl, PHP_URL_HOST), parse_url($redisUrl, PHP_URL_PORT));
             $password = parse_url($redisUrl, PHP_URL_PASS);
             if ($password) {
                 $this->redis->auth($password);
             }
+
+            echo 'Redis connection established successfully.'; // À changer pour une vraie méthode de log
         } catch (Exception $e) {
             throw new Exception('Redis connection failed: ' . $e->getMessage());
         }
     }
-
     public function incrementVisits(int $animalId): void
     {
         $this->redis->incr("animal:{$animalId}:visits");

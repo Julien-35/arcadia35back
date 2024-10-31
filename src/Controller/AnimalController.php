@@ -14,7 +14,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\{JsonResponse, Request, Response};
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Redis;
+use App\Service\RedisService; 
 
 #[Route('/api/animal', name:'app_api_arcadia_animal_')]
 class AnimalController extends AbstractController
@@ -24,19 +24,22 @@ class AnimalController extends AbstractController
     private HabitatRepository $habitatRepository;
     private RaceRepository $raceRepository;
     private RedisService $redisService;
+    private LoggerInterface $logger;
 
     public function __construct(
         EntityManagerInterface $manager,
         AnimalRepository $repository,
         HabitatRepository $habitatRepository,
         RaceRepository $raceRepository,
-        RedisService $redisService
+        RedisService $redisService,
+        LoggerInterface $logger // Ajouter le logger ici
     ) {
         $this->manager = $manager;
         $this->repository = $repository;
         $this->habitatRepository = $habitatRepository;
         $this->raceRepository = $raceRepository;
         $this->redisService = $redisService; 
+        $this->logger = $logger; // Initialiser le logger
     }
 
     #[Route('/post', name:'create', methods:['POST'])]
