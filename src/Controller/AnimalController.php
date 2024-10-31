@@ -14,7 +14,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\{JsonResponse, Request, Response};
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use App\Service\RedisService;
+use App\Service\RedisService; 
 
 #[Route('/api/animal', name:'app_api_arcadia_animal_')]
 class AnimalController extends AbstractController
@@ -36,7 +36,7 @@ class AnimalController extends AbstractController
         $this->repository = $repository;
         $this->habitatRepository = $habitatRepository;
         $this->raceRepository = $raceRepository;
-        $this->redisService = $redisService; // Initialisation du service Redis
+        $this->redisService = $redisService; 
     }
 
     #[Route('/post', name:'create', methods:['POST'])]
@@ -118,57 +118,47 @@ class AnimalController extends AbstractController
         if (!$animal) {
             return new JsonResponse(['error' => 'Animal not found'], Response::HTTP_NOT_FOUND);
         }
-
+    
         try {
+            $this->redisService->incrementVisits($animal->getId());
             $visits = $this->redisService->getVisits($animal->getId());
-        } catch (\Exception $e) {
-            $visits = 0; 
+        } catch (Exception $e) {
+            return new JsonResponse(['error' => 'Error interacting with Redis: ' . $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-
-        return new JsonResponse(['message' => 'Visits incremented'], Response::HTTP_OK);
+    
+        return new JsonResponse(['message' => 'Visits incremented', 'total_visits' => $visits], Response::HTTP_OK);
     }
-
-    #[Route('/test-redis', name: 'test_redis', methods: ['GET'])]
-    public function testRedis(RedisService $redisService): JsonResponse
-    {
-        try {
-            $visits = $redisService->getVisits(1); // Utilisez un ID arbitraire
-            return new JsonResponse(['success' => 'Redis connection is working', 'visits' => $visits]);
-        } catch (\Exception $e) {
-            return new JsonResponse(['error' => 'Redis connection failed: ' . $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
-    }
-
 
     #[Route('/get', name: 'show', methods: ['GET'])]
     public function show(Request $request): JsonResponse
     {
         $habitatId = $request->query->get('habitat_id');
         $raceId = $request->query->get('race_id');
-
+    
         $criteria = [];
-
+    
         if ($habitatId) {
             $criteria['habitat'] = $habitatId;
         }
-
+    
         if ($raceId) {
             $criteria['race'] = $raceId;
         }
-
+    
         $animals = $this->repository->findBy($criteria);
-
+    
         if (empty($animals)) {
-            return new JsonResponse(['message' => 'Aucun animal trouvé'], Response::HTTP_NOT_FOUND);
+            return new JsonResponse(['message' => 'Aucun animal trouvé avec les critères fournis.'], Response::HTTP_NOT_FOUND);
         }
-
+    
         $animalsArray = [];
         foreach ($animals as $animal) {
             // Obtenir le nombre de visites
             try {
                 $visits = $this->redisService->getVisits($animal->getId());
             } catch (\Exception $e) {
-                $visits = 0;
+                // Si l'accès à Redis échoue, on peut loguer l'erreur ou traiter différemment
+                $visits = 0; // Définir le nombre de visites à 0 si une erreur se produit
             }
             
             // Créer les données de chaque animal
@@ -190,13 +180,13 @@ class AnimalController extends AbstractController
                     ];
                 }, $animal->getRapportVeterinaire()->toArray())
             ];
-
+    
             $animalsArray[] = $animalData;
         }
-
+    
         return new JsonResponse($animalsArray, Response::HTTP_OK);
     }
-
+    
     #[Route('/{id}', name:'edit', methods:['PUT'])]
     public function updateAnimal(Request $request, $id): JsonResponse
     {
