@@ -11,17 +11,6 @@ class RedisService
     public function __construct(Redis $redis)
     {
         $this->redis = $redis;
-
-        // Connexion à Redis
-        try {
-            $this->redis->connect(parse_url(getenv('REDISCLOUD_URL'))['host'], parse_url(getenv('REDISCLOUD_URL'))['port']);
-            if (isset(parse_url(getenv('REDISCLOUD_URL'))['pass'])) {
-                $this->redis->auth(parse_url(getenv('REDISCLOUD_URL'))['pass']);
-            }
-        } catch (\Exception $e) {
-            // Gérer l'erreur de connexion
-            throw new \RuntimeException('Erreur de connexion à Redis : ' . $e->getMessage());
-        }
     }
 
     public function incrementVisits(int $animalId): void
@@ -33,4 +22,17 @@ class RedisService
     {
         return (int)$this->redis->get('animal_visits:' . $animalId);
     }
+
+
+    #[Route('/test-redis', name: 'test_redis')]
+    public function testRedis(): JsonResponse
+    {
+        try {
+            $visits = $this->redisService->getVisits(1); // Utilisez un ID arbitraire
+            return new JsonResponse(['success' => 'Redis connection is working', 'visits' => $visits]);
+        } catch (\Exception $e) {
+            return new JsonResponse(['error' => 'Redis connection failed: ' . $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+    
 }

@@ -21,9 +21,8 @@ services:
         calls:
             - method: connect
               arguments:
-                  - '%env(REDISCLOUD_URL)%' # Pour production
-                  - 0 # 0 est généralement utilisé pour le port par défaut
-    
-    App\Service\RedisService:
-        arguments:
-            $redis: '@Redis'  # Assurez-vous que Redis est injecté correctement  
+                  - '%env(resolve:REDISCLOUD_URL_HOST)%'  # Hôte de Redis extrait
+                  - '%env(resolve:REDISCLOUD_URL_PORT)%'  # Port de Redis extrait
+            - method: auth
+              arguments:
+                  - '%env(resolve:REDISCLOUD_URL_PASS)%'  # Mot de passe Redis
