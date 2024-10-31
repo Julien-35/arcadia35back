@@ -128,6 +128,18 @@ class AnimalController extends AbstractController
         return new JsonResponse(['message' => 'Visits incremented'], Response::HTTP_OK);
     }
 
+    #[Route('/test-redis', name: 'test_redis', methods: ['GET'])]
+    public function testRedis(RedisService $redisService): JsonResponse
+    {
+        try {
+            $visits = $redisService->getVisits(1); // Utilisez un ID arbitraire
+            return new JsonResponse(['success' => 'Redis connection is working', 'visits' => $visits]);
+        } catch (\Exception $e) {
+            return new JsonResponse(['error' => 'Redis connection failed: ' . $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
     #[Route('/get', name: 'show', methods: ['GET'])]
     public function show(Request $request): JsonResponse
     {
