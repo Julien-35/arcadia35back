@@ -16,13 +16,6 @@ services:
             - '@App\Repository\UserRepository'
 
     # Configure le service Redis
-    Redis:
-        class: Redis
-        calls:
-            - method: connect
-              arguments:
-                  - '%env(resolve:REDISCLOUD_URL_HOST)%'  # Hôte de Redis extrait
-                  - '%env(resolve:REDISCLOUD_URL_PORT)%'  # Port de Redis extrait
-            - method: auth
-              arguments:
-                  - '%env(resolve:REDISCLOUD_URL_PASS)%'  # Mot de passe Redis
+    App\Service\RedisService:
+        arguments:
+            $redisUrl: '%env(OPENREDIS_URL)%'  # Utiliser %env() pour s'assurer que c'est une variable d'environnement
