@@ -25,7 +25,7 @@ class HabitatController extends AbstractController
         $this->repository = $repository;
     }
 
-    #[Route('', name:'create', methods:['POST'])]
+    #[Route('/post', name:'create', methods:['POST'])]
     public function createHabitat(Request $request): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
