@@ -24,7 +24,6 @@ class AnimalController extends AbstractController
     private HabitatRepository $habitatRepository;
     private RaceRepository $raceRepository;
     private RedisService $redisService;
-    private LoggerInterface $logger;
 
     public function __construct(
         EntityManagerInterface $manager,
@@ -32,14 +31,12 @@ class AnimalController extends AbstractController
         HabitatRepository $habitatRepository,
         RaceRepository $raceRepository,
         RedisService $redisService,
-        LoggerInterface $logger // Ajouter le logger ici
     ) {
         $this->manager = $manager;
         $this->repository = $repository;
         $this->habitatRepository = $habitatRepository;
         $this->raceRepository = $raceRepository;
         $this->redisService = $redisService; 
-        $this->logger = $logger; // Initialiser le logger
     }
 
     #[Route('/post', name:'create', methods:['POST'])]
