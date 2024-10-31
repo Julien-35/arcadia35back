@@ -4,15 +4,13 @@ namespace App\Service;
 
 use Redis;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Routing\Annotation\Route;
 
 class RedisService {
-    private $redis;
+    private Redis $redis;
 
     public function __construct(Redis $redis) {
         $this->redis = $redis;
     }
-
 
     public function incrementVisits(int $animalId): void
     {
@@ -24,7 +22,6 @@ class RedisService {
         return (int)$this->redis->get('animal_visits:' . $animalId);
     }
 
-    #[Route('/test-redis', name: 'test_redis')]
     public function testRedis(): JsonResponse
     {
         try {

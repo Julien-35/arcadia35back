@@ -15,12 +15,10 @@ services:
         arguments:
             - '@App\Repository\UserRepository'
 
-    # Configure le service RedisFactory
     App\Factory\RedisFactory:
         arguments:
             $redisUrl: '%env(OPENREDIS_URL)%'  # Passez l'URL Redis à RedisFactory
 
     # Configure le service RedisService
     App\Service\RedisService:
-        arguments:
-            $redis: '@App\Factory\RedisFactory'
+        factory: ['@App\Factory\RedisFactory', 'create']  # Utilisez la méthode create de RedisFactory

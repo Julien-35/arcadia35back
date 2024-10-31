@@ -2,18 +2,18 @@
 
 namespace App\Factory;
 
-use Predis\Client;
+use Redis;
 
-class RedisFactory
-{
+class RedisFactory {
     private string $redisUrl;
 
-    public function __construct(string $redisUrl)
-    {
+    public function __construct(string $redisUrl) {
         $this->redisUrl = $redisUrl;
     }
 
-    public function createRedis(): Client {
-        return new Client($this->redisUrl);
+    public function create(): Redis {
+        $redis = new Redis();
+        $redis->connect($this->redisUrl);
+        return $redis;
     }
 }
