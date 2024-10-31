@@ -10,7 +10,7 @@ services:
             - '../src/Entity/'
             - '../src/Kernel.php'
 
-    # Correct the ApiTokenAuthenticator service definition
+    # Correction de la définition du service ApiTokenAuthenticator
     App\Security\ApiTokenAuthenticator:
         arguments:
             - '@App\Repository\UserRepository'

@@ -3,28 +3,16 @@
 namespace App\Service;
 
 use Redis;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Routing\Annotation\Route;
 
 class RedisService
 {
     private Redis $redis;
 
-    public function __construct(string $redisUrl)
+    public function __construct(Redis $redis)
     {
-        $this->redis = new Redis();
-
-        // Connexion à Redis en utilisant l'URL fournie
-        $urlParts = parse_url($redisUrl);
-        $host = $urlParts['host'];
-        $port = $urlParts['port'];
-        $password = $urlParts['pass'] ?? null;
-
-        // Établir la connexion
-        if ($password) {
-            $this->redis->connect($host, $port);
-            $this->redis->auth($password);
-        } else {
-            $this->redis->connect($host, $port);
-        }
+        $this->redis = $redis;
     }
 
     public function incrementVisits(int $animalId): void
@@ -35,5 +23,16 @@ class RedisService
     public function getVisits(int $animalId): int
     {
         return (int)$this->redis->get('animal_visits:' . $animalId);
+    }
+
+    #[Route('/test-redis', name: 'test_redis')]
+    public function testRedis(): JsonResponse
+    {
+        try {
+            $visits = $this->getVisits(1); // Utilisez un ID arbitraire
+            return new JsonResponse(['success' => 'Redis connection is working', 'visits' => $visits]);
+        } catch (\Exception $e) {
+            return new JsonResponse(['error' => 'Redis connection failed: ' . $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 }
