@@ -18,4 +18,4 @@ services:
     # Configure le service Redis
     App\Service\RedisService:
         arguments:
-            $redisUrl: '%env(OPENREDIS_URL)%'  # Utiliser %env() pour s'assurer que c'est une variable d'environnement
+            $redisUrl: '%env(OPENREDIS_URL)%'
