@@ -21,4 +21,6 @@ services:
 
     # Configure le service RedisService
     App\Service\RedisService:
-        factory: ['@App\Factory\RedisFactory', 'create']  # Utilisez la méthode create de RedisFactory
+        arguments:
+            $redisUrl: '%env(OPENREDIS_URL)%'
+            $logger: '@logger'  # Si vous avez configuré un logger
