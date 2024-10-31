@@ -10,7 +10,12 @@ $redis = new Redis();
 try {
     // Se connecter à Redis
     $redis->connect(parse_url($redisUrl, PHP_URL_HOST), parse_url($redisUrl, PHP_URL_PORT));
-    $redis->auth(parse_url($redisUrl, PHP_URL_USER), parse_url($redisUrl, PHP_URL_PASS));
+
+    // Vérifiez si un mot de passe est présent et authentifiez si c'est le cas
+    $password = parse_url($redisUrl, PHP_URL_PASS);
+    if ($password) {
+        $redis->auth($password);
+    }
 
     echo "Connection to Redis is working.";
 } catch (Exception $e) {
