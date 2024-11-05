@@ -230,6 +230,14 @@ class AnimalController extends AbstractController
             $animal->setImageData($data['image_data']);
         }
 
+        if (isset($data['habitat'])) {
+            $animal->setHabitat($data['habitat']);
+        }
+
+        if (isset($data['race'])) {
+            $animal->setRacet($data['race']);
+        }
+
         $this->manager->persist($animal);
         $this->manager->flush();
 
@@ -242,9 +250,11 @@ class AnimalController extends AbstractController
                 'etat' => $animal->getEtat(),
                 'nourriture' => $animal->getNourriture(),
                 'grammage' => $animal->getGrammage(),
-                'feeding_time' => $animal->getFeedingTime()->format('H:i'), // format "HH:mm"
-                'created_at' => $animal->getCreatedAt()->format('Y-m-d'), // format "YYYY-MM-DD"
+                'feeding_time' => $animal->getFeedingTime()->format('H:i'), 
+                'created_at' => $animal->getCreatedAt()->format('Y-m-d'), 
                 'image_data' => $animal->getImageData(),
+                'habitat' => $animal->getHabitat(),
+                'race' => $animal->getRace(),
             ]
         ], Response::HTTP_OK);
     }
