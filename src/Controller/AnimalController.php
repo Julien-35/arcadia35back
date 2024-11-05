@@ -229,15 +229,21 @@ class AnimalController extends AbstractController
         if (isset($data['image_data'])) {
             $animal->setImageData($data['image_data']);
         }
-
         if (isset($data['habitat'])) {
-            $animal->setHabitat($data['habitat']);
+            $habitat = $this->habitatRepository->find($data['habitat']);
+            if (!$habitat) {
+                return new JsonResponse(['error' => 'Invalid habitat ID'], Response::HTTP_BAD_REQUEST);
+            }
+            $animal->setHabitat($habitat);
         }
-
+        
         if (isset($data['race'])) {
-            $animal->setRace($data['race']);
+            $race = $this->raceRepository->find($data['race']);
+            if (!$race) {
+                return new JsonResponse(['error' => 'Invalid race ID'], Response::HTTP_BAD_REQUEST);
+            }
+            $animal->setRace($race);
         }
-
         $this->manager->persist($animal);
         $this->manager->flush();
 
