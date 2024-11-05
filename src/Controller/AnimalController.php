@@ -235,7 +235,7 @@ class AnimalController extends AbstractController
         }
 
         if (isset($data['race'])) {
-            $animal->setRacet($data['race']);
+            $animal->setRace($data['race']);
         }
 
         $this->manager->persist($animal);
@@ -253,8 +253,8 @@ class AnimalController extends AbstractController
                 'feeding_time' => $animal->getFeedingTime()->format('H:i'), 
                 'created_at' => $animal->getCreatedAt()->format('Y-m-d'), 
                 'image_data' => $animal->getImageData(),
-                'habitat' => $animal->getHabitat(),
-                'race' => $animal->getRace(),
+                'habitat' => $animal->getHabitat() ? $animal->getHabitat()->getNom() : null,
+                'race' => $animal->getRace() ? $animal->getRace()->getLabel() : null,
             ]
         ], Response::HTTP_OK);
     }
