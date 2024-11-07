@@ -5,14 +5,13 @@ namespace App;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Component\HttpKernel\Kernel as BaseKernel;
+use Symfony\Component\Dotenv\Dotenv; // Importation de Dotenv pour charger les variables
 use Symfony\WebpackEncoreBundle\WebpackEncoreBundle;
 use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
 use Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle;
 use Nelmio\CorsBundle\NelmioCorsBundle; 
-use Symfony\Bundle\SecurityBundle\SecurityBundle; // Assurez-vous d'importer le SecurityBundle
+use Symfony\Bundle\SecurityBundle\SecurityBundle; 
 use Symfony\Bundle\TwigBundle\TwigBundle;
-use Symfony\Component\Dotenv\Dotenv;
-
 
 class Kernel extends BaseKernel
 {
@@ -31,7 +30,7 @@ class Kernel extends BaseKernel
         ];
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {
-            // Ajoutez d'autres bundles si nécessaire
+            // Ajoutez d'autres bundles si nécessaire pour l'environnement dev/test
         }
 
         return $bundles;
@@ -39,6 +38,7 @@ class Kernel extends BaseKernel
 
     protected function initializeContainer()
     {
+        // Charger les variables d'environnement uniquement en dev/test, pas en prod
         if ($this->getEnvironment() !== 'prod') {
             (new Dotenv())->bootEnv(dirname(__DIR__).'/.env');
         }
