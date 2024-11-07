@@ -34,4 +34,13 @@ class Kernel extends BaseKernel
 
         return $bundles;
     }
+
+    protected function initializeContainer()
+    {
+        if ($this->getEnvironment() !== 'prod') {
+            (new Dotenv())->bootEnv(dirname(__DIR__).'/.env');
+        }
+
+        parent::initializeContainer();
+    }
 }
