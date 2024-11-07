@@ -161,6 +161,7 @@ class AnimalController extends AbstractController
                 $visits = 0; // Définir le nombre de visites à 0 si une erreur se produit
             }
             
+            
             // Créer les données de chaque animal
             $animalData = [
                 'id' => $animal->getId(),
