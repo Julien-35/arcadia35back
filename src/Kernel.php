@@ -11,6 +11,8 @@ use Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle;
 use Nelmio\CorsBundle\NelmioCorsBundle; 
 use Symfony\Bundle\SecurityBundle\SecurityBundle; // Assurez-vous d'importer le SecurityBundle
 use Symfony\Bundle\TwigBundle\TwigBundle;
+use Symfony\Component\Dotenv\Dotenv;
+
 
 class Kernel extends BaseKernel
 {
