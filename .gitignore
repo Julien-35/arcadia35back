@@ -7,8 +7,6 @@
 /public/bundles/
 /var/
 /vendor/
-###< symfony/framework-bundle ###
-/Dockerfileback
 
 ###> symfony/webpack-encore-bundle ###
 /node_modules/

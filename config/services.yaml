@@ -10,17 +10,16 @@ services:
             - '../src/Entity/'
             - '../src/Kernel.php'
 
-    # Correction de la définition du service ApiTokenAuthenticator
     App\Security\ApiTokenAuthenticator:
         arguments:
             - '@App\Repository\UserRepository'
 
     App\Factory\RedisFactory:
         arguments:
-            $redisUrl: '%env(OPENREDIS_URL)%'  # Passez l'URL Redis à RedisFactory
+            $redisUrl: '%env(OPENREDIS_URL)%'  
 
     # Configure le service RedisService
     App\Service\RedisService:
         arguments:
             $redisUrl: '%env(OPENREDIS_URL)%'
-            $logger: '@logger'  # Si vous avez configuré un logger
+            $logger: '@logger'  
