@@ -160,7 +160,7 @@ class AnimalController extends AbstractController
         foreach ($animals as $animal) {
             // Obtenir le nombre de visites
             try {
-                $visits = $this->redisService->getVisits($animal->getId());
+                $visits = $this->redisService->getVisits($animal->getPrenom());
             } catch (\Exception $e) {
                 // Si l'accès à Redis échoue, on peut loguer l'erreur ou traiter différemment
                 $visits = 0; // Définir le nombre de visites à 0 si une erreur se produit
