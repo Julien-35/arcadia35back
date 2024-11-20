@@ -119,15 +119,20 @@ class AnimalController extends AbstractController
             return new JsonResponse(['error' => 'Animal not found'], Response::HTTP_NOT_FOUND);
         }
     
+        // Récupérer le prénom de l'animal
+        $prenom = $animal->getPrenom();
+    
         try {
-            $this->redisService->incrementVisits($animal->getId());
-            $visits = $this->redisService->getVisits($animal->getId());
+            // Passer le prénom de l'animal au lieu de l'ID
+            $this->redisService->incrementVisits($prenom);
+            $visits = $this->redisService->getVisits($prenom);
         } catch (Exception $e) {
             return new JsonResponse(['error' => 'Error interacting with Redis: ' . $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     
-        return new JsonResponse(['message' => 'Visits incremented', 'total_visits' => $visits], Response::HTTP_OK);
+        return new JsonResponse(['message' => 'Visits incremented for ' . $prenom, 'total_visits' => $visits], Response::HTTP_OK);
     }
+    
 
     #[Route('/get', name: 'show', methods: ['GET'])]
     public function show(Request $request): JsonResponse

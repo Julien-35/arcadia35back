@@ -29,14 +29,16 @@ class RedisService
         }
     }
 
-    public function incrementVisits(int $animalId): void
+    public function incrementVisits(string $prenom): void
     {
-        $this->redis->incr("animal:{$animalId}:visits");
+        // Utiliser le prénom comme clé
+        $this->redis->incr("animal:{$prenom}:visits");
     }
-
-    public function getVisits(int $animalId): int
+    
+    public function getVisits(string $prenom): int
     {
-        return (int) $this->redis->get("animal:{$animalId}:visits") ?: 0;
+        // Utiliser le prénom comme clé
+        return (int) $this->redis->get("animal:{$prenom}:visits") ?: 0;
     }
 
     // Ajoutez une méthode pour vérifier la connexion si nécessaire
