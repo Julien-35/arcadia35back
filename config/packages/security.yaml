@@ -20,7 +20,7 @@ security:
     access_control:
         - { path: ^/api/registration, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/api/service, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/service/get, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/service, roles: ROLE_ADMIN, methods: [POST] }
         - { path: ^/api/horaire/, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/horaire/get, roles: IS_AUTHENTICATED_ANONYMOUSLY }
