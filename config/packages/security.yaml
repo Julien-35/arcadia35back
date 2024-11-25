@@ -18,7 +18,7 @@ security:
                 username_path: email
                 password_path: password
     access_control:
-        - { path: ^/api/service, roles: [ROLE_EMPLOYE, ROLE_ADMIN], methods: [PUT] }
+        - { path: ^/api/service/[0-9]+, roles: [ROLE_EMPLOYE, ROLE_ADMIN], methods: [PUT] }
         - { path: ^/api/service/post, roles: ROLE_ADMIN, methods: [POST] }
         - { path: ^/api/service, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/service, roles: [ROLE_EMPLOYE, ROLE_ADMIN], methods: [DELETE] }
