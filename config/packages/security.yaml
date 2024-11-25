@@ -24,7 +24,6 @@ security:
         - { path: ^/api/service/post, roles: ROLE_ADMIN, methods: [POST] }
 
         # Route pour modifier un service (PUT) - Accessible uniquement à ROLE_EMPLOYE et ROLE_ADMIN
-        - { path: ^/api/service/{id}, roles: [ROLE_EMPLOYE, ROLE_ADMIN], methods: [PUT] }
         - { path: ^/api/service, roles: [ROLE_EMPLOYE, ROLE_ADMIN], methods: [DELETE] }
 
         - { path: ^/api/registration, roles: IS_AUTHENTICATED_ANONYMOUSLY }
