@@ -18,9 +18,7 @@ security:
                 username_path: email
                 password_path: password
     access_control:
-         - { path: ^/api/service/[0-9]+, roles: [ROLE_EMPLOYE, ROLE_ADMIN], methods: [PUT] }
-
-        # Route pour créer un service (POST) - Accessible uniquement à ROLE_ADMIN
+        - { path: ^/api/service/[0-9]+, roles: [ROLE_EMPLOYE, ROLE_ADMIN], methods: [PUT] }
         - { path: ^/api/service/post, roles: ROLE_ADMIN, methods: [POST] }
 
         # Route pour modifier un service (PUT) - Accessible uniquement à ROLE_EMPLOYE et ROLE_ADMIN
