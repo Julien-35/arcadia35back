@@ -74,7 +74,9 @@ public function show(): JsonResponse
 #[Route('/{id}', name: 'edit', methods: ['PUT'])]
 public function updateService(Request $request, int $id): JsonResponse
 {
-
+    if (!$this->isGranted('ROLE_ADMIN') && !$this->isGranted('ROLE_EMPLOYE')) {
+        return new JsonResponse(['error' => 'Unauthorized'], Response::HTTP_FORBIDDEN);
+    }
     // Récupérer le service par ID
     $service = $this->repository->find($id);
     
