@@ -29,13 +29,13 @@ class RedisService
         }
     }
 
-    public function incrementVisits(string $prenom): void
+    public function incrementVisitsAnimal(string $prenom): void
     {
         // Utiliser le prénom comme clé
         $this->redis->incr("animal:{$prenom}:visits");
     }
     
-    public function getVisits(string $prenom): int
+    public function getVisitsAnimal(string $prenom): int
     {
         // Utiliser le prénom comme clé
         return (int) $this->redis->get("animal:{$prenom}:visits") ?: 0;

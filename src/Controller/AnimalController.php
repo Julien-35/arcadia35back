@@ -124,8 +124,8 @@ class AnimalController extends AbstractController
     
         try {
             // Passer le prénom de l'animal au lieu de l'ID
-            $this->redisService->incrementVisits($prenom);
-            $visits = $this->redisService->getVisits($prenom);
+            $this->redisService->incrementVisitsAnimal($prenom);
+            $visits = $this->redisService->getVisitsAnimal($prenom);
         } catch (Exception $e) {
             return new JsonResponse(['error' => 'Error interacting with Redis: ' . $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -160,7 +160,7 @@ class AnimalController extends AbstractController
         foreach ($animals as $animal) {
             // Obtenir le nombre de visites
             try {
-                $visits = $this->redisService->getVisits($animal->getPrenom());
+                $visits = $this->redisService->getVisitsAnimal($animal->getPrenom());
             } catch (\Exception $e) {
                 // Si l'accès à Redis échoue, on peut loguer l'erreur ou traiter différemment
                 $visits = 0; // Définir le nombre de visites à 0 si une erreur se produit
